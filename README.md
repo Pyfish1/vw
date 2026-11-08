@@ -1,0 +1,1 @@
+A simple ls clone. Challenging myself to learn a language without any AI
