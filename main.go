@@ -34,7 +34,7 @@ func main() {
 	arguments := os.Args[1:]
 	var dir string
 	if len(arguments) > 0 {
-		dir = arguments[1]
+		dir = arguments[0]
 	} else {
 		dir = "."
 	}
