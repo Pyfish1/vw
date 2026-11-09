@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/vinay03/chalk"
 )
@@ -13,21 +15,31 @@ func checkerr(err error) {
 	}
 }
 
+const COL_WIDTH = 20
+
+// FIX NAME OVERFLOW ISSUE
 func serveDir(dir string) {
 	f, err := os.OpenFile(dir, os.O_RDONLY, 0666)
 	checkerr(err)
 	finfo, err := f.Readdir(0)
 	checkerr(err)
 
+	var builder strings.Builder
+
 	for _, entry := range finfo {
+		var Name string
 		if entry.IsDir() {
-			fileName := chalk.Green().Sprintf(entry.Name())
-			fmt.Println(fileName)
+			Name = chalk.Green().Sprintf(entry.Name())
+			fmt.Fprintf(&builder, "%-*s", COL_WIDTH+9, Name)
 		} else {
-			fileName := entry.Name()
-			fmt.Println(fileName)
+			Name = entry.Name()
+			fmt.Fprintf(&builder, "%-*s", COL_WIDTH, Name)
 		}
+		builder.WriteString(strconv.FormatInt(entry.Size(), 10))
+		builder.WriteString("\n")
+
 	}
+	fmt.Println(builder.String())
 }
 
 func main() {
