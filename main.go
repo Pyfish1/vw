@@ -15,9 +15,18 @@ func checkerr(err error) {
 	}
 }
 
-const COL_WIDTH = 20
+const COL_WIDTH = 30
+const BUFFER = 1
 
-// FIX NAME OVERFLOW ISSUE
+func shorten(entry string) string {
+	const MAX_LENGTH = COL_WIDTH - BUFFER
+	if len(entry) > MAX_LENGTH {
+		return entry[:MAX_LENGTH-2] + ".."
+	} else {
+		return entry
+	}
+}
+
 func serveDir(dir string) {
 	f, err := os.OpenFile(dir, os.O_RDONLY, 0666)
 	checkerr(err)
@@ -26,13 +35,19 @@ func serveDir(dir string) {
 
 	var builder strings.Builder
 
+	fmt.Fprintf(&builder, "%-*s", COL_WIDTH, "Name")
+	builder.WriteString("Size")
+	builder.WriteString("\n")
+	fmt.Fprintf(&builder, strings.Repeat("-", COL_WIDTH+6)+"\n")
+
 	for _, entry := range finfo {
 		var Name string
 		if entry.IsDir() {
-			Name = chalk.Green().Sprintf(entry.Name())
+			Name = shorten(entry.Name())
+			Name = chalk.Green().Sprintf(Name)
 			fmt.Fprintf(&builder, "%-*s", COL_WIDTH+9, Name)
 		} else {
-			Name = entry.Name()
+			Name = shorten(entry.Name())
 			fmt.Fprintf(&builder, "%-*s", COL_WIDTH, Name)
 		}
 		builder.WriteString(strconv.FormatInt(entry.Size(), 10))
